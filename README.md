@@ -3,11 +3,14 @@
 #### Culturally enriches the pidorussian lingamus on the popular chat platform with funny pictures for girls 2ch. The site becomes even more funnier.
 
 
-Requirements
-* Browser: Chrome or Firefox or Vivaldi
-* A browser plugin: Tampermonkey or ViolentMonkey
-* Setting: Set "Run only in top frame" to "No" in plugin's settings for the script.
+**Usage**
+1. Install the browser plugin extension Tampermonkey
+2. Click on the plugin icon, choose "[+] Create a new script" and paste to editor the contents of the file [rufuker.js](https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js)
+3. In the editor switch to the script settings tab, Set **"Run only in top frame" to "No"**
+4. Open the site, refresh the page and enjoy!
 
-Otherwise you can simply paste it into a browser console when the site page is opened. It may also work in other usercript manager plugins like GreaseMonkey _except for FireMonkey due to incompatibility_. 
+**Other options**
+* You can try it fast without the plugin. On the site page, right click, Inspect and paste the script into a browser console. 
+* It may also work in other usercript manager plugins like GreaseMonkey, ViolentMonkey, except for FireMonkey. 
 
 ![Demo](/Demo-Screenshot.png)
