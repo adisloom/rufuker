@@ -9,3 +9,5 @@ Requirements
 * Setting: Set "Run only in top frame" to "No" in plugin's settings for the script.
 
 Otherwise you can simply paste it into a browser console when the site page is opened. It may also work in other usercript manager plugins like GreaseMonkey _except for FireMonkey due to incompatibility_. 
+
+![Demo](/Screenshot.png)
