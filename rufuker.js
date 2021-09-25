@@ -5,7 +5,6 @@
 // @version      0.49
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
-// @author       Anon
 // @copyright    2021, Anon
 // @match        *://2ch.hk/*
 // @match        *://2ch.pm/*
