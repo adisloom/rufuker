@@ -5,8 +5,8 @@
 
 **Usage**
 1. Install the browser plugin extension Tampermonkey
-2. Click on the plugin icon, choose "[+] Create a new script" and paste to editor the contents of the file [rufuker.js](https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js)
-3. In the editor switch to the script settings tab, Set **"Run only in top frame" to "No"**
+2. Go to the site and click Install the script [Rufuker 2ch install](https://greasyfork.org/ru/scripts/432951-rufuker-2ch)
+3. In the Tampermonkey plugin navigate to script setteings and set **"Run only in top frame" to "No"**
 4. Open the site, refresh the page and enjoy!
 
 **Other options**
