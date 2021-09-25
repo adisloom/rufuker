@@ -9,7 +9,6 @@
 // @copyright    2021, Anon
 // @match        *://2ch.hk/*
 // @match        *://2ch.pm/*
-// @exclude      *
 // @license      GPL-3.0-only
 // @homepageURL  https://github.com/adisloom/rufuker/blob/main/README.md
 // @updateURL    https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js
