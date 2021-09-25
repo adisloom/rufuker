@@ -1,12 +1,19 @@
 // ==UserScript==
-// @name         Rufuker
+// @name         Rufuker 2ch
+// @name:ru      Руфакер для Двач 2ch
 // @namespace    https://2ch.hk/
-// @version      0.47
-// @description  Culturally enriches the pidorussian lingamus
+// @version      0.48
+// @description  Culturally enriches the pidorussian lingamus on 2ch
+// @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
 // @match        *://2ch.hk/*
 // @match        *://2ch.pm/*
-// @icon         https://www.google.com/s2/favicons?domain=2ch.hk&sz=64
+// @license      GPL-3.0
+// @updateURL    https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js
+// @downloadURL  https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js
+// @supportURL   https://github.com/adisloom/rufuker/issues
+// @defaulticon  https://www.google.com/s2/favicons?domain=2ch.hk
+// @icon64       https://www.google.com/s2/favicons?domain=2ch.hk&sz=64
 // @grant        none
 // ==/UserScript==
 
@@ -24,6 +31,8 @@
 
 (function() {
     'use strict';
+
+    if (!document.getElementById('posts-form')) return;
 
     class Rufuker {
         rufuker_replacement_rules = [
