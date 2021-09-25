@@ -2,13 +2,14 @@
 // @name         Rufuker 2ch
 // @name:ru      Руфакер для Двач 2ch
 // @namespace    https://2ch.hk/
-// @version      0.48
+// @version      0.49
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
 // @copyright    2021, Anon
 // @match        *://2ch.hk/*
 // @match        *://2ch.pm/*
+// @exclude      *
 // @license      GPL-3.0-only
 // @homepageURL  https://github.com/adisloom/rufuker/blob/main/README.md
 // @updateURL    https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js
