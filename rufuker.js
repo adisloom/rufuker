@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Rufuker
 // @namespace    https://2ch.hk/
-// @version      0.33
+// @version      0.47
 // @description  Culturally enriches the pidorussian lingamus
 // @author       Anon
 // @match        *://2ch.hk/*
@@ -25,172 +25,155 @@
 (function() {
     'use strict';
 
-    const aThreads = $('.thread');
-    if (aThreads.length == 0) return;
+    class Rufuker {
+        rufuker_replacement_rules = [
+            // xx -> yy
+            ['ий народ', 'ай на рот'],
+            ['осси', 'абсе'],
+            ['сски', 'зке'],
+            ['еще', 'есчо'],
+            ['когда', 'када'],
+            ['деньг', 'тэньг'],
+            ['денег', 'дынек'],
+            ['денеж', 'дыняш'],
+            ['ого([ \\s,\\.\\-:])', 'ава$1'],
+            ['о([влрт])о', 'а$1а'],
+            ['[иы]й([ \\s,\\.\\-:])', 'ы$1'],
+            ['([^ \\s,\\.\\-:])ие([ \\s,\\.\\-:])', '$1$1е$2'],
+            ['ри', 'ґы'],
+            ['ре', 'ґе'],
+            ['ря', 'ґя'],
+            ['рь', 'гх'],
+            ['ти', 'це'],
+            ['те', 'ця'],
+            ['тя', 'ца'],
+            ['ди', 'дэ'],
+            ['де', 'ды'],
+            ['ши', 'шэ'],
+            ['ше', 'ша'],
+            ['жи', 'жэ'],
+            ['же', 'жа'],
+            ['си', 'се'],
+            ['ио', 'её'],
+            ['иа', 'ея'],
+            ['иу', 'ею'],
+            ['ие', 'ее'],
+            ['ться', 'ца'],
+            ['тся', 'тсо'],
+            ['дь', 'ц'],
+            ['ть', 'ц'],
+            ['ли', 'ле'],
+            ['че', 'це'],
+            ['([жшч])ь', '$1$1'],
+            ['щ', 'ш'],
+            ['([^ \\s,\\.\\-:])и([ \\s,\\.\\-:])', '$1е$2'],
+            ['ъе', 'йэ'],
+            ['ъё', 'йо'],
+            ['ъю', 'йу'],
+            ['ъя', 'йа'],
+            [' и([ \\s,\\.\\-:])', ' ды$1'],
+            ['и', 'ы'] ];
+        addUpperCase = true;
+        aReplacement = [];
 
-    const rufuker_replacement_rules = [
-        // xx -> yy
-        // xxx -> yyy
-        // changing text length causes flickering in a preview popup
-        ['ий народ', 'ай на рот'],
-        ['ски', 'зке'],
-        ['еще', 'ышо'],
-        ['когда', 'кахда'],
-        ['деньг', 'теньг'],
-        ['денег', 'дынек'],
-        ['денеж', 'дыняш'],
-        ['ого([ \s,\.\-:])', 'ава$1'],
-        ['о([влрт])о', 'а$1а'],
-  //      ['[иы]й([ \s,\.\-:])', 'ы$1'], 
-        ['([^ \s,\.\-:])ие([ \s,\.\-:])', '$1$1е$2'],
-        ['ри', 'ґи'],
-        ['ре', 'ґе'],
-        ['ря', 'ґя'],
-        ['рь', 'гх'],
-        ['ти', 'це'],
-        ['те', 'ця'],
-        ['тя', 'ца'],
-        ['ди', 'дэ'],
-        ['де', 'ды'],
-        ['ши', 'шэ'],
-        ['ше', 'ша'],
-        ['жи', 'жэ'],
-        ['же', 'жа'],
-        ['си', 'се'],
-        ['ио', 'её'],
-        ['иа', 'ея'],
-        ['иу', 'ею'],
-        ['ие', 'ее'],
-        ['ться', 'тцца'],
-        ['тся', 'тсо'],
-        ['дь', 'ць'],
-        ['ть', 'ць'],
-        ['ли', 'ле'],
-        ['че', 'це'],
-        ['([жшч])ь', '$1$1'],
-        ['щ', 'ш'],
-        ['([^ \s,\.\-:])и([ \s,\.\-:])', '$1е$2'],
-        ['ъе', 'йэ'],
-        ['ъё', 'йо'],
-        ['ъю', 'йу'],
-        ['ъя', 'йа'],
-//        [' и([ \s,\.\-:])', ' ды$1'],
-//      [' И([ \s,\.\-:])', ' ДЫ$1'],
-        ['и', 'ы'] ];
-
-    const aReplacement = rufuker_replacement_rules.map( c => ({ sRegex: new RegExp(c[0],'g'), sSubst: c[1] }) );
-
-    function replace_str(txt) {
-        for (let r of aReplacement) {
-            txt = txt.toString().replace(r.sRegex, r.sSubst);
-        }
-        return txt;
-    }
-
-    function replaceArticleByNum(idNum) {
-        let id_article = 'm' + idNum;
-        var el = document.getElementById(id_article);
-        el.innerHTML = replace_str(el.innerHTML);
-    }
-
-    function replacePostPreviewByNum(idNum) {
-        //must address through a parent container because the site uses a similar dom-ID on for preview articles
-        let id_preview = 'preview-' + idNum;
-        var el = document.getElementById(id_preview);
-        for (const ch of el.children) {
-            if (ch.nodeName === 'ARTICLE') {
-                ch.innerHTML = replace_str(ch.innerHTML);
-                return true;
-            };
-        }
-        return false;
-    }
-
-    function getElementNumsFromNodeList(nodeList) {
-        let aIdNums = new Set(); //unique
-        nodeList.forEach(el => aIdNums.add( el.id.match(/\d{3,}/g).pop() ) ); //need the 3+ digits from the ned
-        aIdNums.delete(null);
-        aIdNums.delete(undefined);
-        return Array.from(aIdNums);
-    }
-
-    function getElementNumsFromParent(selector, parentElement) {
-        const aElements = parentElement.querySelectorAll(selector);
-        return getElementNumsFromNodeList(aElements);
-    }
-
-    function getArticleNums(parentElement) {
-        return getElementNumsFromParent('article.post__message', parentElement);
-    }
-
-    function getThreadPostNums(parentElement) {
-        const op = getElementNumsFromParent('div.thread__oppost', parentElement);
-        const cm = getElementNumsFromParent('div.thread__post', parentElement);
-        return Array.from(new Set(op.concat(cm))); //unique
-    }
-
-    function getPostPreviewNums(parentElement) {
-        return getElementNumsFromParent('div.post_preview', parentElement);
-    }
-
-    //Reaplce posts added by scrolling or preview popups
-    const handleScrollAndPopup = function(mutationsList, observer) {
-        //Todo Get rid of popup flicker on a main board page.
-        // https://developer.mozilla.org/en-US/docs/Web/API/MutationRecord
-        for(const mutation of mutationsList) {
-            if (mutation.type === 'attributes' || mutation.type === 'characterData') {
-                console.log('Mutation in handleScrollAndPopup, Something was modified.');
+        constructor(uppercaseOption){
+            if (typeof uppercaseOption === 'boolean') this.addUpperCase = uppercaseOption;
+            this.aReplacement = this.rufuker_replacement_rules.map( c => ({ sRegex: new RegExp(c[0],'g'), sSubst: c[1] }) );
+            if (this.addUpperCase) {
+                var aUpcasedReplacement = this.rufuker_replacement_rules.map( function(c) {
+                    let rgx = c[0];
+                    let upRgx = '';
+                    for (let i = 0; i < rgx.length; i++){
+                        let res = rgx[i].match(/[а-я]/);
+                        if (res) upRgx = upRgx + res[0].toString().toUpperCase();
+                        else upRgx = upRgx + rgx[i];
+                    }
+                    return { sRegex: new RegExp(upRgx,'g'), sSubst: c[1].toUpperCase() };
+                });
+                this.aReplacement = this.aReplacement.concat(aUpcasedReplacement);
             }
-            else if (mutation.type === 'childList') {
-                console.log('Mutation in handleScrollAndPopup: A child node has been added or removed.');
+            var that = this;
+            this.rufukString = function (txt) {
+                for (let r of that.aReplacement) {
+                    txt = txt.toString().replace(r.sRegex, r.sSubst);
+                }
+                return txt;
             }
         }
-        const aCurrentPostNums = getThreadPostNums(workingElement); //bug
-        //const aCurrentPostNums = getArticleNums(workingElement);
-        let aNewPostNums = aCurrentPostNums.filter(x => !aInitialPostNums.includes(x));
-        aNewPostNums.map( idNum => replaceArticleByNum(idNum) );
-        // todo optimize MutationRecord
-        // post preview popup
-        setTimeout(function(){
-            let aPreviewPostNumbers = getPostPreviewNums(workingElement);
-            aPreviewPostNumbers.map( idNum => replacePostPreviewByNum(idNum) );
-        }, 75); //minimize popup flicker
-    };
+    } //class
 
-    //Replace posts added by regular refresh on a single thread page
-    const handleNewPosts = function(mutationsList, observer) {
-        debugger;
-        for(const mutation of mutationsList) {
-            if (mutation.type === 'attributes' || mutation.type === 'characterData') {
-                console.log('Mutation in handleNewPosts, Something was modified.');
-            } else if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                //here comes a DIV without ID. need to go deeper one level firstElementChild will be DIV with ID
-                console.log('Mutation in handleNewPosts, children added: ' + mutation.addedNodes.length);
-                var aPostNums = [];
-                aPostNums = getElementNumsFromParent('div.thread__post', mutation.addedNodes[0]);
-                aPostNums.map(idNum => replaceArticleByNum(idNum) );
+    /* 
+     *  Can traverse 2ch and replace text in all the posts
+     *  including popups and dynamically loaded messages.
+     *  Argument - a function for text conversion.
+     */
+    class TextReplacer2ch {
+        workingElement;
+        #flagObserveNewPosts = true;
+        #flagObserveScrollAndPopup = true;
+        delayPopup = 100; //ms
+
+        constructor (txtConverter) {
+            this.txtConverter = txtConverter;
+
+            if (this.workingElement = document.getElementById('posts-form')); else return 0;
+            const aThreads = this.workingElement.querySelectorAll('div.thread');
+            if (aThreads.length === 0) return 0; //wrong page
+            this.replaceAllDecendantArticles(this.workingElement);
+            var that = this;
+
+            const board_observer = new MutationObserver(function(mutationsList, observer) {
+                setTimeout(function(){
+                for(const mutation of mutationsList) {
+                    if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
+                    mutation.addedNodes.forEach(function(n) {
+                        if (n.className === 'post post_type_reply post_preview') {
+                            for (const idx in n.children) {
+                                if (n.children[idx].nodeName === 'ARTICLE') {
+                                    n.children[idx].innerHTML = that.txtConverter(n.children[idx].innerHTML);
+                                }
+                            }
+                        } else if (n.className === 'thread') {
+                            const thread = document.getElementById(n.id);
+                            that.replaceAllDecendantArticles(thread);
+                        }
+                    });
+                }
+                }, this.delayPopup);
+            });
+            if (this.#flagObserveScrollAndPopup) {
+                board_observer.observe(this.workingElement, {childList:true});
             }
+            //single thread page needs one more observer for added posts
+            if (this.#flagObserveNewPosts && aThreads.length === 1) {
+                const thread_observer = new MutationObserver(function(mutationsList, observer) {
+                    for(const mutation of mutationsList) {
+                        if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
+                        for (const n of mutation.addedNodes[0].children) {
+                            if (n.nodeName !== 'DIV' || ! n.hasAttribute('id')) continue;
+                            let idNum = n.id.match( /\d{3,}/g).pop(); //last 3+ digits
+                            that.replaceArticleByNum(idNum);
+                        }
+                    } //for
+                });
+                thread_observer.observe(aThreads[0], {childList:true});
+            } // end second observer
+        } //constructor
+
+        replaceAllDecendantArticles(pe) {
+            const articles = pe.querySelectorAll('article.post__message');
+            articles.forEach(a => a.innerHTML = this.txtConverter(a.innerHTML));
         }
-    }
 
-    var workingElement;
-    var aInitialPostNums = [];
-    
-    // main
+        replaceArticleByNum(idNum) {
+            const id_article = 'm' + idNum;
+            const el = document.getElementById(id_article);
+            el.innerHTML = this.txtConverter(el.innerHTML);
+        }
+    } //class
 
-    workingElement = aThreads[0].parentElement;
-    aInitialPostNums = getArticleNums(workingElement);
-    aInitialPostNums.map(idNum => replaceArticleByNum(idNum) );
 
-    if (workingElement.nodeName === 'DIV' && workingElement.hasAttribute('id') && workingElement.id === 'posts-form') {
-        const board_observer = new MutationObserver(handleScrollAndPopup);
-        board_observer.observe(workingElement, {childList:true}); //todo try smthAdded param
-    }
-    if (aThreads.length == 1) {
-        debugger;
-        //on a single thread page we need one more observer for added posts
-        const thread_observer = new MutationObserver(handleNewPosts);
-        thread_observer.observe(aThreads[0], {childList:true}); //todo try smthAdded param
-    }
+    var txtConverter = new Rufuker();
+    var replacer = new TextReplacer2ch(txtConverter.rufukString);
 
 })();
