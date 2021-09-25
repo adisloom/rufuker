@@ -6,12 +6,15 @@
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
+// @copyright    2021, Anon
 // @match        *://2ch.hk/*
 // @match        *://2ch.pm/*
 // @license      GPL-3.0
+// @homepageURL  https://github.com/adisloom/rufuker/blob/main/README.md
 // @updateURL    https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js
 // @downloadURL  https://raw.githubusercontent.com/adisloom/rufuker/main/rufuker.js
 // @supportURL   https://github.com/adisloom/rufuker/issues
+// @icon         https://www.google.com/s2/favicons?domain=2ch.hk
 // @defaulticon  https://www.google.com/s2/favicons?domain=2ch.hk
 // @icon64       https://www.google.com/s2/favicons?domain=2ch.hk&sz=64
 // @grant        none
