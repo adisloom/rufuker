@@ -2,7 +2,7 @@
 // @name         Rufuker 2ch
 // @name:ru      Руфакер для Двач 2ch
 // @namespace    https://2ch.hk/
-// @version      0.49
+// @version      0.5
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
@@ -76,7 +76,7 @@
             ['ть', 'ц'],
             ['ли', 'ле'],
             ['че', 'це'],
-            ['([жшч])ь', '$1$1'],
+            ['([жшч])ь', '$1'],
             ['щ', 'ш'],
             ['([^ \\s,\\.\\-:])и([ \\s,\\.\\-:])', '$1е$2'],
             ['ъе', 'йэ'],
