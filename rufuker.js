@@ -100,17 +100,28 @@
                         if (res) upRgx = upRgx + res[0].toString().toUpperCase();
                         else upRgx = upRgx + rgx[i];
                     }
-                    return { sRegex: new RegExp(upRgx,'g'), sSubst: c[1].toUpperCase() };
+                    let substitute = c[1].at(0).toUpperCase() + c[1].slice(1); //capitalize the first letter
+                    return { sRegex: new RegExp(upRgx,'g'), sSubst: substitute };
                 });
                 this.aReplacement = this.aReplacement.concat(aUpcasedReplacement);
             }
             var that = this;
             this.rufukString = function (txt) {
+                var flagAllCaps = that.detectAllCaps(txt);
                 for (let r of that.aReplacement) {
-                    txt = txt.toString().replace(r.sRegex, r.sSubst);
+                    let substitute = r.sSubst.toString();
+                    if (flagAllCaps) substitute = substitute.toUpperCase();
+                    txt = txt.toString().replace(r.sRegex, substitute);
                 }
                 return txt;
             }
+        }
+        detectAllCaps(str){
+           let part = str.slice(-200);
+           let res;
+           if (res = part.match(/[А-Я]/g))
+               if (res.length / part.length > 0.10) return true;
+           else return false;
         }
     } //class
 
