@@ -35,8 +35,7 @@
 (function() {
     'use strict';
 
-    if (!document.getElementById('posts-form')) return;
-
+    if (!document.getElementById('posts-form')) return 1;
     class Rufuker {
         rufuker_replacement_rules = [
             // xx -> yy
@@ -105,22 +104,22 @@
                 });
                 this.aReplacement = this.aReplacement.concat(aUpcasedReplacement);
             }
-            var that = this;
-            this.rufukString = function (txt) {
-                var flagAllCaps = that.detectAllCaps(txt);
-                for (let r of that.aReplacement) {
-                    let substitute = r.sSubst.toString();
-                    if (flagAllCaps) substitute = substitute.toUpperCase();
-                    txt = txt.toString().replace(r.sRegex, substitute);
-                }
-                return txt;
+            this.rufukString = this.covertText.bind(this);
+        }
+        covertText(txt) {
+            var flagAllCaps = this.detectAllCaps(txt);
+            for (let r of this.aReplacement) {
+                let substitute = r.sSubst.toString();
+                if (flagAllCaps) substitute = substitute.toUpperCase();
+                txt = txt.toString().replace(r.sRegex, substitute);
             }
+            return txt;
         }
         detectAllCaps(str){
            let part = str.slice(-200);
            let res;
            if (res = part.match(/[А-Я]/g))
-               if (res.length / part.length > 0.10) return true;
+               if (res.length / part.length > 0.30) return true;
            else return false;
         }
     } //class
@@ -139,48 +138,19 @@
         constructor (txtConverter) {
             this.txtConverter = txtConverter;
 
-            if (this.workingElement = document.getElementById('posts-form')); else return 0;
+            if (this.workingElement = document.getElementById('posts-form')); else return 1;
             const aThreads = this.workingElement.querySelectorAll('div.thread');
-            if (aThreads.length === 0) return 0; //wrong page
+            if (aThreads.length === 0) return 2; //wrong page
             this.replaceAllDecendantArticles(this.workingElement);
-            var that = this;
-
-            const board_observer = new MutationObserver(function(mutationsList, observer) {
-                setTimeout(function(){
-                for(const mutation of mutationsList) {
-                    if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
-                    mutation.addedNodes.forEach(function(n) {
-                        if (n.className === 'post post_type_reply post_preview') {
-                            for (const idx in n.children) {
-                                if (n.children[idx].nodeName === 'ARTICLE') {
-                                    n.children[idx].innerHTML = that.txtConverter(n.children[idx].innerHTML);
-                                }
-                            }
-                        } else if (n.className === 'thread') {
-                            const thread = document.getElementById(n.id);
-                            that.replaceAllDecendantArticles(thread);
-                        }
-                    });
-                }
-                }, this.delayPopup);
-            });
             if (this.#flagObserveScrollAndPopup) {
+                const board_observer = new MutationObserver(this.replaceScrollAndPopup.bind(this));
                 board_observer.observe(this.workingElement, {childList:true});
             }
             //single thread page needs one more observer for added posts
             if (this.#flagObserveNewPosts && aThreads.length === 1) {
-                const thread_observer = new MutationObserver(function(mutationsList, observer) {
-                    for(const mutation of mutationsList) {
-                        if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
-                        for (const n of mutation.addedNodes[0].children) {
-                            if (n.nodeName !== 'DIV' || ! n.hasAttribute('id')) continue;
-                            let idNum = n.id.match( /\d{3,}/g).pop(); //last 3+ digits
-                            that.replaceArticleByNum(idNum);
-                        }
-                    } //for
-                });
+                const thread_observer = new MutationObserver(this.replaceNewPosts.bind(this));
                 thread_observer.observe(aThreads[0], {childList:true});
-            } // end second observer
+            }
         } //constructor
 
         replaceAllDecendantArticles(pe) {
@@ -193,10 +163,40 @@
             const el = document.getElementById(id_article);
             el.innerHTML = this.txtConverter(el.innerHTML);
         }
+
+        replaceScrollAndPopup(mutationsList, observer) {
+            setTimeout( () => {
+                for(const mutation of mutationsList) {
+                    if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
+                    mutation.addedNodes.forEach( n => {
+                        if (n.className === 'post post_type_reply post_preview') {
+                            for (const idx in n.children) {
+                                if (n.children[idx].nodeName === 'ARTICLE') {
+                                    n.children[idx].innerHTML = this.txtConverter(n.children[idx].innerHTML);
+                                }
+                            }
+                        } else if (n.className === 'thread') {
+                            const thread = document.getElementById(n.id);
+                            this.replaceAllDecendantArticles(thread);
+                        }
+                    });
+                }
+            }, this.delayPopup);
+        }
+
+        replaceNewPosts (mutationsList, observer) {
+            for(const mutation of mutationsList) {
+                if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
+                for (const n of mutation.addedNodes[0].children) {
+                    if (n.nodeName !== 'DIV' || ! n.hasAttribute('id')) continue;
+                    let idNum = n.id.match( /\d{3,}/g).pop(); //last 3+ digits
+                    this.replaceArticleByNum(idNum);
+                }
+            } //for
+        }
     } //class
 
-
     var txtConverter = new Rufuker();
-    var replacer = new TextReplacer2ch(txtConverter.rufukString);
+    new TextReplacer2ch(txtConverter.rufukString);
 
 })();
