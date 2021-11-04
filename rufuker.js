@@ -2,7 +2,7 @@
 // @name         Rufuker 2ch
 // @name:ru      Руфакер для Двач 2ch
 // @namespace    https://2ch.hk/
-// @version      0.5
+// @version      0.52
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
@@ -36,6 +36,13 @@
     'use strict';
 
     if (!document.getElementById('posts-form')) return 1;
+
+
+     /* 
+     *  Converts a string of text according to the rules.
+     *  Optionial argument (bool) to disable uppercase 
+     *  text conversion. Default - enabled 
+     */
     class Rufuker {
         rufuker_replacement_rules = [
             // xx -> yy
@@ -89,22 +96,24 @@
 
         constructor(uppercaseOption){
             if (typeof uppercaseOption === 'boolean') this.addUpperCase = uppercaseOption;
-            this.aReplacement = this.rufuker_replacement_rules.map( c => ({ sRegex: new RegExp(c[0],'g'), sSubst: c[1] }) );
-            if (this.addUpperCase) {
-                var aUpcasedReplacement = this.rufuker_replacement_rules.map( function(c) {
-                    let rgx = c[0];
-                    let upRgx = '';
-                    for (let i = 0; i < rgx.length; i++){
-                        let res = rgx[i].match(/[а-я]/);
-                        if (res) upRgx = upRgx + res[0].toString().toUpperCase();
-                        else upRgx = upRgx + rgx[i];
-                    }
-                    let substitute = c[1].at(0).toUpperCase() + c[1].slice(1); //capitalize the first letter
-                    return { sRegex: new RegExp(upRgx,'g'), sSubst: substitute };
-                });
-                this.aReplacement = this.aReplacement.concat(aUpcasedReplacement);
-            }
+            this.compile_regex();
             this.rufukString = this.covertText.bind(this);
+        }
+        compile_regex() {
+            this.aReplacement = this.rufuker_replacement_rules.map( c => ({ sRegex: new RegExp(c[0],'g'), sSubst: c[1] }) );
+            if (!this.addUpperCase) return;
+            var aUpcasedReplacement = this.rufuker_replacement_rules.map( function(c) {
+                let rgx = c[0];
+                let upRgx = '';
+                for (let i = 0; i < rgx.length; i++){
+                    let res = rgx[i].match(/[а-я]/);
+                    if (res) upRgx = upRgx + res[0].toString().toUpperCase();
+                    else upRgx = upRgx + rgx[i];
+                }
+                let substitute = c[1].at(0).toUpperCase() + c[1].slice(1); //capitalize the first letter
+                return { sRegex: new RegExp(upRgx,'g'), sSubst: substitute };
+            });
+            this.aReplacement = this.aReplacement.concat(aUpcasedReplacement);
         }
         covertText(txt) {
             var flagAllCaps = this.detectAllCaps(txt);
@@ -123,6 +132,7 @@
            else return false;
         }
     } //class
+
 
     /* 
      *  Can traverse 2ch and replace text in all the posts
@@ -165,11 +175,12 @@
         }
 
         replaceScrollAndPopup(mutationsList, observer) {
+            let post_classes = ['post', 'post_type_reply', 'post_preview'];
             setTimeout( () => {
                 for(const mutation of mutationsList) {
                     if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
                     mutation.addedNodes.forEach( n => {
-                        if (n.className === 'post post_type_reply post_preview') {
+                        if (post_classes.every(name => n.classList.contains(name))) {
                             for (const idx in n.children) {
                                 if (n.children[idx].nodeName === 'ARTICLE') {
                                     n.children[idx].innerHTML = this.txtConverter(n.children[idx].innerHTML);
