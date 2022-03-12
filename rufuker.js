@@ -2,11 +2,11 @@
 // @name         Rufuker 2ch
 // @name:ru      Руфакер для Двач 2ch
 // @namespace    https://2ch.hk/
-// @version      0.52
+// @version      0.53
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
-// @copyright    2021, Anon
+// @copyright    2021-2022, Anon
 // @match        *://2ch.hk/*
 // @match        *://2ch.pm/*
 // @license      GPL-3.0-only
@@ -28,7 +28,7 @@
 * Set "Run only in top frame" to "No" in plugin's settings for the script.
 *
 * It may also work in other usercript manager plugins:
-* GreaseMonkey, ViolentMonkey etc, except for FireMonkey.
+* GreaseMonkey, ViolentMonkey, FireMonkey.
 *
 ***********************************************************************************/
 
@@ -96,10 +96,10 @@
 
         constructor(uppercaseOption){
             if (typeof uppercaseOption === 'boolean') this.addUpperCase = uppercaseOption;
-            this.compile_regex();
+            this.compileRegex();
             this.rufukString = this.covertText.bind(this);
         }
-        compile_regex() {
+        compileRegex() {
             this.aReplacement = this.rufuker_replacement_rules.map( c => ({ sRegex: new RegExp(c[0],'g'), sSubst: c[1] }) );
             if (!this.addUpperCase) return;
             var aUpcasedReplacement = this.rufuker_replacement_rules.map( function(c) {
@@ -175,12 +175,12 @@
         }
 
         replaceScrollAndPopup(mutationsList, observer) {
-            let post_classes = ['post', 'post_type_reply', 'post_preview'];
+            let postClasses = ['post', 'post_type_reply', 'post_preview'];
             setTimeout( () => {
                 for(const mutation of mutationsList) {
                     if (mutation.type !== 'childList' || mutation.addedNodes.length === 0) continue;
                     mutation.addedNodes.forEach( n => {
-                        if (post_classes.every(name => n.classList.contains(name))) {
+                        if (postClasses.every(name => n.classList.contains(name))) {
                             for (const idx in n.children) {
                                 if (n.children[idx].nodeName === 'ARTICLE') {
                                     n.children[idx].innerHTML = this.txtConverter(n.children[idx].innerHTML);

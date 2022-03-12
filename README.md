@@ -11,6 +11,6 @@
 
 **Other options**
 * TRY IT without the plugin. On the site, right click, Inspect and paste the script into a browser console. 
-* It may also work in other usercript manager plugins like GreaseMonkey, ViolentMonkey, except for FireMonkey. 
+* It may also work in other usercript manager plugins like GreaseMonkey, ViolentMonkey, FireMonkey. 
 
 ![Demo](/Demo-Screenshot.png)
