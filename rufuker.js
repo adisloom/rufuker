@@ -2,7 +2,7 @@
 // @name         Rufuker 2ch
 // @name:ru      Руфакер для Двач 2ch
 // @namespace    https://2ch.hk/
-// @version      0.54
+// @version      0.55
 // @description  Culturally enriches the pidorussian lingamus on 2ch
 // @description:ru  Культурна облагарожывает росейскую языку на Дваче 2ch
 // @author       Anon
@@ -36,7 +36,9 @@
 (function() {
     'use strict';
 
-    if (!document.getElementById('posts-form')) return 1;
+    if (!document.getElementById('js-posts'))
+        if (!document.getElementById('posts-form'))
+            return 1;
 
 
      /* 
@@ -149,7 +151,10 @@
         constructor (txtConverter) {
             this.txtConverter = txtConverter;
 
-            if (this.workingElement = document.getElementById('posts-form')); else return 1;
+            if (this.workingElement = document.getElementById('js-posts'));
+              else if (this.workingElement = document.getElementById('posts-form'));
+            		else return 1;
+
             const aThreads = this.workingElement.querySelectorAll('div.thread');
             if (aThreads.length === 0) return 2; //wrong page
             this.replaceAllDecendantArticles(this.workingElement);
